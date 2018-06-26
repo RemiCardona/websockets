@@ -344,7 +344,7 @@ class WebSocketCommonProtocol(asyncio.StreamReaderProtocol):
         else:
             next_message.cancel()
             if not self.legacy_recv:
-                assert self.state in [State.CLOSING, State.CLOSED]
+                assert self.state in [State.CLOSING, State.CLOSED], "wrong state %r" % self.state
                 # Wait until the connection is closed to raise
                 # ConnectionClosed with the correct code and reason.
                 yield from self.ensure_open()
