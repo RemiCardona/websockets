@@ -89,7 +89,7 @@ class WebSocketServerProtocol(WebSocketCommonProtocol):
                     extra_headers=self.extra_headers,
                 )
             except ConnectionError as exc:
-                logger.debug(
+                self.debug(
                     "Connection error in opening handshake", exc_info=True)
                 raise
             except Exception as exc:
@@ -106,28 +106,28 @@ class WebSocketServerProtocol(WebSocketCommonProtocol):
                         exc.body,
                     )
                 elif isinstance(exc, InvalidOrigin):
-                    logger.debug("Invalid origin", exc_info=True)
+                    self.debug("Invalid origin", exc_info=True)
                     status, headers, body = (
                         FORBIDDEN,
                         [],
                         (str(exc) + "\n").encode(),
                     )
                 elif isinstance(exc, InvalidUpgrade):
-                    logger.debug("Invalid upgrade", exc_info=True)
+                    self.debug("Invalid upgrade", exc_info=True)
                     status, headers, body = (
                         UPGRADE_REQUIRED,
                         [('Upgrade', 'websocket')],
                         (str(exc) + "\n").encode(),
                     )
                 elif isinstance(exc, InvalidHandshake):
-                    logger.debug("Invalid handshake", exc_info=True)
+                    self.debug("Invalid handshake", exc_info=True)
                     status, headers, body = (
                         BAD_REQUEST,
                         [],
                         (str(exc) + "\n").encode(),
                     )
                 else:
-                    logger.warning("Error in opening handshake", exc_info=True)
+                    self.warning("Error in opening handshake", exc_info=True)
                     status, headers, body = (
                         INTERNAL_SERVER_ERROR,
                         [],
@@ -155,7 +155,7 @@ class WebSocketServerProtocol(WebSocketCommonProtocol):
                     if not self.closed:
                         self.fail_connection(1001)
                 else:
-                    logger.error("Error in connection handler", exc_info=True)
+                    self.error("Error in connection handler", exc_info=True)
                     if not self.closed:
                         self.fail_connection(1011)
                 raise
@@ -163,12 +163,12 @@ class WebSocketServerProtocol(WebSocketCommonProtocol):
             try:
                 yield from self.close()
             except ConnectionError as exc:
-                logger.debug(
+                self.debug(
                     "Connection error in closing handshake", exc_info=True)
                 raise
             except Exception as exc:
                 if not self._is_server_shutting_down(exc):
-                    logger.warning("Error in closing handshake", exc_info=True)
+                    self.warning("Error in closing handshake", exc_info=True)
                 raise
 
         except Exception:
